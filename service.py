@@ -102,3 +102,9 @@ async def get_paste(paste_id: str):
     except:
         raise HTTPException(status_code=500, detail="Decryption failed")
     return Response(content=data, media_type="text/plain")
+
+
+@app.get("/api/v1/paste/health")
+async def health_check():
+    """Health check endpoint for Docker."""
+    return {"status": "healthy"}
