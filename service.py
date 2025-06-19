@@ -1,18 +1,25 @@
 from fastapi import FastAPI, UploadFile, File, Request, HTTPException
 from fastapi.responses import Response
 from cryptography.fernet import Fernet
+from dotenv import load_dotenv
 import uuid, os
 
-DATA_DIR = os.environ.get("PASTEBIN_DATA_DIR", "./pastes")
-KEY_PATH = os.environ.get("PASTEBIN_KEY_PATH", "./secrets/secret.key")
 
 app = FastAPI()
 
 
-@app.lifespan("startup")
+@app.on_event("startup")
 async def startup_event():
+    load_dotenv()
+
+    BASE_URL = os.environ.get("PASTEBIN_BASE_URL", "https://pastebin.marqueewinq.xyz")
+    DATA_DIR = os.environ.get("PASTEBIN_DATA_DIR", "./pastes")
+    KEY_PATH = os.environ.get("PASTEBIN_KEY_PATH", "./secrets/secret.key")
+
     app.state.data_dir = DATA_DIR
     app.state.key_path = KEY_PATH
+    app.state.base_url = BASE_URL
+
     os.makedirs(app.state.data_dir, exist_ok=True)
 
     if not os.path.exists(app.state.key_path):
@@ -35,6 +42,9 @@ async def startup_event():
         app.state.pull_sh = f.read()
     with open(app.state.push_sh_path, "r") as f:
         app.state.push_sh = f.read()
+
+    app.state.pull_sh = app.state.pull_sh.replace("<<<base url>>>", app.state.base_url)
+    app.state.push_sh = app.state.push_sh.replace("<<<base url>>>", app.state.base_url)
 
 
 @app.get("/pull.sh")

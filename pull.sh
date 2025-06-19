@@ -2,28 +2,33 @@
 
 set -e
 
-BASE_URL="https://pastebin.marqueewinq.xyz"
+BASE_URL=<<<base url>>>
 PASTE_URL="${BASE_URL}/api/v1/paste"
 
 check_dep() {
     printf "checking for %s... " "$1"
-    if "$2" &>/dev/null; then
+    if eval "$2" >/dev/null 2>&1; then
         echo "ok"
     else
         echo "missing"
+        echo "Command failed: $2"
         echo "$3"
         exit 1
     fi
 }
 
-check_dep "python3" "command -v python3" "Install python3 with: \n\tsudo apt install python3"
-check_dep "fernet" "python3 -c 'from cryptography.fernet import Fernet'" "Install fernet with: \n\tpip install cryptography"
+check_dep "python3" "python3 --version" "Install python3 with: sudo apt install python3"
+check_dep "fernet" "python3 -c 'from cryptography.fernet import Fernet'" "Install fernet with: pip install cryptography"
 
 if [ -t 0 ]; then
     read -rp "Paste URL: " url
 else
-    read -r url
+    echo "Paste URL:" >&2
+    read -r url < /dev/tty
 fi
+
+# Strip whitespace and newlines from URL
+url=$(echo "$url" | tr -d '\n\r\t' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 
 IFS='#' read -r paste_url key <<< "$url"
 
@@ -37,10 +42,14 @@ data=$(curl -sf "$paste_url") || {
     exit 1
 }
 
-python3 -c "
+echo "--------------------------------"
+echo "    Decrypted content below"
+echo "--------------------------------"
+
+FERNET_KEY="$key" python3 -c "
 from cryptography.fernet import Fernet
-import sys
-key = b'$key'
+import sys, os
+key = os.environ['FERNET_KEY'].encode()
 cipher = Fernet(key)
 dec = cipher.decrypt(sys.stdin.buffer.read())
 sys.stdout.buffer.write(dec)

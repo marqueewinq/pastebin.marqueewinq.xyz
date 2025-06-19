@@ -2,8 +2,12 @@
 import os, click, uvicorn
 from cryptography.fernet import Fernet
 
-DATA_DIR = os.environ.get("PASTEBIN_DATA_DIR", "./pastes")
-SECRETS_DIR = os.environ.get("PASTEBIN_SECRETS_DIR", "./secrets")
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DATA_DIR = os.getenv("PASTEBIN_DATA_DIR", "./pastes")
+SECRETS_DIR = os.getenv("PASTEBIN_SECRETS_DIR", "./secrets")
 KEY_PATH = os.path.join(SECRETS_DIR, "secret.key")
 
 
