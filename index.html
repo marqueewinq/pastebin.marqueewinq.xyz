@@ -225,6 +225,88 @@
                         <p>Built with FastAPI for high performance. No accounts, no tracking, just secure text sharing.</p>
                     </div>
                 </div>
+
+                <div style="margin-top: 40px; text-align: center;">
+                    <h3 style="color: #2c3e50; margin-bottom: 30px; font-size: 1.5rem;">End-to-End Encryption Flow</h3>
+                    <svg width="900" height="350" viewBox="0 0 900 350" style="max-width: 100%; height: auto;">
+                        <!-- Background -->
+                        <rect width="900" height="400" fill="#f8f9fa" rx="10"/>
+
+                        <!-- Client Device -->
+                        <rect x="50" y="40" width="200" height="150" fill="#667eea" rx="8"/>
+                        <text x="150" y="65" text-anchor="middle" fill="white" font-weight="bold" font-size="14">Client Device</text>
+
+                        <!-- Plaintext -->
+                        <rect x="70" y="80" width="160" height="25" fill="#ecf0f1" rx="4"/>
+                        <text x="150" y="95" text-anchor="middle" fill="#2c3e50" font-size="12">Plaintext Content</text>
+
+                        <!-- Encryption Key -->
+                        <rect x="70" y="115" width="160" height="25" fill="#e74c3c" rx="4"/>
+                        <text x="150" y="130" text-anchor="middle" fill="white" font-size="12">🔑 Generated Key</text>
+
+                        <!-- Encrypted Data -->
+                        <rect x="70" y="150" width="160" height="25" fill="#27ae60" rx="4"/>
+                        <text x="150" y="165" text-anchor="middle" fill="white" font-size="12">🔒 Encrypted Data</text>
+
+                        <!-- Server -->
+                        <rect x="350" y="40" width="200" height="150" fill="#95a5a6" rx="8"/>
+                        <text x="450" y="65" text-anchor="middle" fill="white" font-weight="bold" font-size="14">Server</text>
+
+                        <!-- Server Storage -->
+                        <rect x="370" y="80" width="160" height="25" fill="#34495e" rx="4"/>
+                        <text x="450" y="95" text-anchor="middle" fill="white" font-size="12">📁 Encrypted Storage</text>
+
+                        <!-- Server Key -->
+                        <rect x="370" y="115" width="160" height="25" fill="#8e44ad" rx="4"/>
+                        <text x="450" y="130" text-anchor="middle" fill="white" font-size="12">🔐 Server Key</text>
+
+                        <!-- Double Encrypted -->
+                        <rect x="370" y="150" width="160" height="25" fill="#e67e22" rx="4"/>
+                        <text x="450" y="165" text-anchor="middle" fill="white" font-size="12">🔒🔒 Double Encrypted</text>
+
+                        <!-- Recipient Device -->
+                        <rect x="650" y="40" width="200" height="150" fill="#667eea" rx="8"/>
+                        <text x="750" y="65" text-anchor="middle" fill="white" font-weight="bold" font-size="14">Recipient Device</text>
+
+                        <!-- Received Encrypted -->
+                        <rect x="670" y="80" width="160" height="25" fill="#27ae60" rx="4"/>
+                        <text x="750" y="95" text-anchor="middle" fill="white" font-size="12">🔒 Encrypted Data</text>
+
+                        <!-- Recipient Key -->
+                        <rect x="670" y="115" width="160" height="25" fill="#e74c3c" rx="4"/>
+                        <text x="750" y="130" text-anchor="middle" fill="white" font-size="12">🔑 Shared Key</text>
+
+                        <!-- Decrypted Content -->
+                        <rect x="670" y="150" width="160" height="25" fill="#ecf0f1" rx="4"/>
+                        <text x="750" y="165" text-anchor="middle" fill="#2c3e50" font-size="12">Plaintext Content</text>
+
+                        <!-- Arrows -->
+                        <!-- Client to Server -->
+                        <path d="M 250 110 L 350 110" stroke="#2c3e50" stroke-width="3" marker-end="url(#arrowhead)"/>
+                        <text x="300" y="100" text-anchor="middle" fill="#2c3e50" font-size="11">HTTPS</text>
+
+                        <!-- Server to Recipient -->
+                        <path d="M 550 110 L 650 110" stroke="#2c3e50" stroke-width="3" marker-end="url(#arrowhead)"/>
+                        <text x="600" y="100" text-anchor="middle" fill="#2c3e50" font-size="11">HTTPS</text>
+
+                        <!-- Key Sharing -->
+                        <path d="M 150 230 L 750 230" stroke="#e74c3c" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
+                        <text x="450" y="220" text-anchor="middle" fill="#e74c3c" font-size="11">🔑 Key Shared via side channel</text>
+
+                        <!-- Security Notes -->
+                        <text x="450" y="280" text-anchor="middle" fill="#27ae60" font-weight="bold" font-size="12">✅ Server Never Sees Plaintext</text>
+                        <text x="450" y="300" text-anchor="middle" fill="#27ae60" font-weight="bold" font-size="12">✅ Each Paste Has Unique Key</text>
+                        <text x="450" y="320" text-anchor="middle" fill="#27ae60" font-weight="bold" font-size="12">✅ End-to-End Encrypted</text>
+
+                        <!-- Arrow marker definition -->
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="7"
+                                    refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#2c3e50"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
             </div>
 
             <div class="section">
