@@ -3,3 +3,4 @@ uvicorn
 click
 cryptography
 python-dotenv
+python-multipart

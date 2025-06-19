@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  pastebin:
+    build: .
+    container_name: pastebin-app
+    ports:
+      - "8050:8050"
+    volumes:
+      - pastebin_pastes:/app/pastes
+      - pastebin_secrets:/app/secrets
+    environment:
+      - PASTEBIN_DATA_DIR=/app/pastes
+      - PASTEBIN_SECRETS_DIR=/app/secrets
+    env_file:
+      - .env
+    networks:
+      - pastebin-network
+
+networks:
+  pastebin-network:
+    driver: bridge
+
+volumes:
+  pastebin_pastes:
+    driver: local
+  pastebin_secrets:
+    driver: local

@@ -37,11 +37,15 @@ def secret():
 
 
 @secret.command()
-def create():
+@click.option("--force", is_flag=True, help="Force overwrite existing key")
+def create(force: bool = False):
     """Generate a new secret key."""
     os.makedirs(SECRETS_DIR, exist_ok=True)
     if os.path.exists(KEY_PATH):
-        click.confirm("Key already exists. Overwrite?", abort=True)
+        if not force:
+            click.confirm("Key already exists. Overwrite?", abort=True)
+        else:
+            os.remove(KEY_PATH)
     key = Fernet.generate_key()
     with open(KEY_PATH, "wb") as f:
         f.write(key)
