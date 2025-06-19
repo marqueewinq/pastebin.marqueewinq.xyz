@@ -26,5 +26,8 @@ RUN chmod +x manage.py pull.sh push.sh start.sh
 # Expose port
 EXPOSE 8050
 
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD curl -f -I http://localhost:8050/ || exit 1
+
 # Start the application using the startup script
 CMD ["./start.sh"]

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Pastebin - Client-Side Encrypted Text Sharing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #66ea7e 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 60px 0;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            font-weight: 300;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+
+        .section {
+            padding: 60px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        .section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            font-weight: 300;
+        }
+
+        .section p {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 4px solid #667eea;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .feature-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+            overflow-x: auto;
+            white-space: pre-line;
+        }
+
+        .code-block code {
+            display: block;
+            line-height: 1.5;
+            white-space: pre-line;
+        }
+
+        .security-badge {
+            display: inline-block;
+            background: #6027ae;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 10px 0;
+        }
+
+        .usage-steps {
+            counter-reset: step-counter;
+        }
+
+        .usage-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .step-content h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 0;
+            color: white;
+            opacity: 0.8;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .section {
+                padding: 40px 20px;
+            }
+
+            .section h2 {
+                font-size: 2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Secure Pastebin</h1>
+            <p>Share text securely with client-side encryption. Your data is encrypted before it leaves your device and can only be decrypted with the secret key.</p>
+            <p>
+                <a href="https://github.com/marqueewinq/pastebin.marqueewinq.xyz" target="_blank" rel="noopener noreferrer">📦 GitHub Repository</a> •
+                <a href="https://pastebin.marqueewinq.xyz/docs" target="_blank" rel="noopener noreferrer">📚 API Docs</a> •
+                <a href="https://pastebin.marqueewinq.xyz/redoc" target="_blank" rel="noopener noreferrer">📖 API ReDoc</a>
+            </p>
+        </div>
+
+        <div class="main-content">
+            <div class="section">
+                <h2>What is Secure Pastebin?</h2>
+                <p>Secure Pastebin is a privacy-focused text sharing service that uses <span class="highlight">client-side encryption</span> to ensure your data remains confidential. Unlike traditional pastebin services, your content is encrypted on your device before being uploaded, and the encryption key is never stored on our servers. The encrypted data is deleted after 24 hours.</p>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <h3>🔒 Client-Side Encryption</h3>
+                        <p>Your data is encrypted using Fernet encryption before it leaves your device. The encryption key is auto-generated locally and is not stored on our servers.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>🚀 Simple CLI Tools</h3>
+                        <p>Easy-to-use bash scripts for uploading and downloading content directly from your terminal.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>⚡ Fast & Lightweight</h3>
+                        <p>Built with FastAPI for high performance. No accounts, no tracking, just secure text sharing.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>How to Use</h2>
+                <div class="usage-steps">
+                    <div class="usage-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Upload Content</h4>
+                            <p>Use the push script to upload encrypted content:</p>
+                            <div class="code-block">
+                                <code>curl -s https://pastebin.marqueewinq.xyz/push.sh | bash</code>
+                            </div>
+                            <p>The script will prompt you to enter your content and generate a secret URL with the encryption key.</p>
+                        </div>
+                    </div>
+
+                    <div class="usage-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Share the Secret URL</h4>
+                            <p>The script will output a URL in this format:</p>
+                            <div class="code-block">
+                                <code>https://pastebin.marqueewinq.xyz/api/v1/paste/abc123def456#your_secret_key</code>
+                            </div>
+                            <p>Share this URL with anyone who needs access to your content.</p>
+                        </div>
+                    </div>
+
+                    <div class="usage-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Download & Decrypt</h4>
+                            <p>Recipients can decrypt the content using the pull script:</p>
+                            <div class="code-block">
+                                <code>curl -s https://pastebin.marqueewinq.xyz/pull.sh | bash</code>
+                            </div>
+                            <p>When prompted, paste the secret URL to decrypt and view the content.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Security & Privacy</h2>
+                <div class="security-badge">🔐 Zero-Knowledge Architecture</div> <div class="security-badge">🌍 Open-Source</div>
+
+                <p><strong>Client-Side Encryption:</strong> All encryption and decryption happens on your device using the Fernet symmetric encryption algorithm. The server never sees your plaintext content.</p>
+
+                <p><strong>No Key Storage:</strong> Encryption keys are generated locally and are never transmitted to or stored on our servers. Only you and your intended recipients have access to the decryption keys.</p>
+
+                <p><strong>Secure Transmission:</strong> Encrypted data is transmitted over HTTPS, ensuring secure communication between your device and our servers.</p>
+
+                <p><strong>No User Accounts:</strong> No registration required. No personal information is collected or stored.</p>
+
+                <p><strong>Open Source:</strong> The entire codebase is open source, allowing you to verify the security implementation and even run your own instance. <a href="https://github.com/marqueewinq/pastebin.marqueewinq.xyz" target="_blank" rel="noopener noreferrer">View the source code on GitHub</a>.</p>
+
+                <p><strong>Automatic Deletion:</strong> All encrypted data is automatically deleted after 24 hours, ensuring your content doesn't persist indefinitely on our servers.</p>
+
+                <div class="code-block">
+                    <code># Example of what the server stores (encrypted):
+# abc123def456: gAAAAABk7X... (encrypted binary data)
+#
+# The server cannot decrypt this content without the key
+# which is only known to you and your recipients.</code>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>API Endpoints</h2>
+                <p>For developers and automation, the service provides RESTful API endpoints:</p>
+
+                <div class="code-block">
+                    <code># Upload encrypted content
+POST /api/v1/paste
+Content-Type: application/octet-stream
+
+# Download encrypted content
+GET /api/v1/paste/{paste_id}
+
+# Health check
+HEAD /</code>
+                </div>
+
+                <p>All API endpoints expect and return encrypted data. The encryption/decryption must be handled client-side.</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2024 <a href="https://pastebin.marqueewinq.xyz">https://pastebin.marqueewinq.xyz</a>. Built with privacy and security in mind.</p>
+            <p>Open source • No tracking • Client-side encryption</p>
+            <p>
+                <a href="https://github.com/marqueewinq/pastebin.marqueewinq.xyz" target="_blank" rel="noopener noreferrer">📦 GitHub Repository</a> •
+                <a href="https://pastebin.marqueewinq.xyz/docs" target="_blank" rel="noopener noreferrer">📚 API Docs</a> •
+                <a href="https://pastebin.marqueewinq.xyz/redoc" target="_blank" rel="noopener noreferrer">📖 API ReDoc</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

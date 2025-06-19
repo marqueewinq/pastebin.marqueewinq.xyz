@@ -4,3 +4,4 @@ click
 cryptography
 python-dotenv
 python-multipart
+jinja2
