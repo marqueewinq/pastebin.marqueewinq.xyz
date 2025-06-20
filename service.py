@@ -3,6 +3,7 @@ import logging
 import os
 import uuid
 from pathlib import Path
+from typing import Optional
 
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv
@@ -257,17 +258,20 @@ async def create_paste(request: Request, file: UploadFile = File(None)):
 
 
 @app.get("/api/v1/paste/{paste_id}")
-async def get_paste(paste_id: str):
+async def get_paste(request: Request, paste_id: str, key: Optional[str] = None):
     """
     Retrieve and decrypt a paste by its ID.
 
     This endpoint retrieves an encrypted paste from storage, decrypts it
-    using the Fernet key, and returns the original content. The paste ID
+    using the provided key, and returns the original content. The paste ID
     must be exactly 12 characters long and correspond to an existing paste.
 
     Parameters:
         paste_id (str): 12-character unique identifier for the paste.
                        Must be a valid hexadecimal string.
+        key (str, optional): Encryption key for the paste. If provided,
+                             the paste will be decrypted using this key.
+                             Defaults to None.
 
     Returns:
         Response:
@@ -278,26 +282,40 @@ async def get_paste(paste_id: str):
     Raises:
         HTTPException:
             - 404 Not Found if paste ID doesn't exist
+            - 400 Bad Request if invalid key provided
             - 500 Internal Server Error if decryption fails
 
     Usage Examples:
 
-        # Retrieve paste content
-        curl https://pastebin.marqueewinq.xyz/api/v1/paste/abc123def456
+        # Retrieve paste content with key
+        curl "https://pastebin.marqueewinq.xyz/api/v1/paste/abc123def456?key=your_secret_key"
 
-        # Save paste to file
-        curl https://pastebin.marqueewinq.xyz/api/v1/paste/abc123def456 > myfile.txt
-
-        # View paste in browser
+        # View paste in browser (shows decryption interface)
         # Navigate to: https://pastebin.marqueewinq.xyz/api/v1/paste/abc123def456
     """
     path = f"{app.state.data_dir}/{paste_id}"
     if not os.path.isfile(path):
         raise HTTPException(status_code=404, detail="Paste not found")
+
+    if not key:
+        return app.state.templates.TemplateResponse(
+            "paste.html", {"request": request, "paste_id": paste_id}
+        )
+
     with open(path, "rb") as f:
         enc_data = f.read()
+
     try:
         data = app.state.fernet.decrypt(enc_data)
     except Exception:
         raise HTTPException(status_code=500, detail="Decryption failed")
-    return Response(content=data, media_type="text/plain")
+    try:
+        local_fernet = Fernet(key.encode())
+        decrypted_data = local_fernet.decrypt(data)
+        return Response(content=decrypted_data, media_type="text/plain")
+    except Exception as e:
+        # Log the error for debugging
+        logging.getLogger("pastebin").error(
+            f"Decryption failed for paste {paste_id}: {str(e)}"
+        )
+        raise HTTPException(status_code=400, detail="Invalid key or corrupted data")

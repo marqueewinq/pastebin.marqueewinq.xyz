@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Paste - {{ paste_id }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #66da7e 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+
+        .paste-section {
+            padding: 40px;
+        }
+
+        .paste-info {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .paste-id {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: #e74c3c;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 10px 0;
+        }
+
+        .content-area {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            min-height: 200px;
+            position: relative;
+        }
+
+        .encrypted-placeholder {
+            color: #6c757d;
+            font-style: italic;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .decrypted-content {
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+            display: none;
+        }
+
+        .key-input-container {
+            margin-bottom: 20px;
+        }
+
+        .key-input-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .key-input-section h3 {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .key-input-section p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-group button {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .input-group button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .input-group button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .input-help {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .decrypt-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .decrypt-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .decrypt-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+            border: 1px solid #f5c6cb;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+            border: 1px solid #c3e6cb;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px 0;
+            color: white;
+            opacity: 0.8;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .paste-section {
+                padding: 20px;
+            }
+
+            .content-area {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Secure Paste</h1>
+            <p>This content is encrypted and requires a secret key to decrypt</p>
+        </div>
+
+        <div class="main-content">
+            <div class="paste-section">
+                <div class="paste-info">
+                    <div class="paste-id">Paste ID: {{ paste_id }}</div>
+                    <div class="status-badge">🔒 Encrypted Content</div>
+                </div>
+
+                <div class="content-area">
+                    <div class="encrypted-placeholder">
+                        🔐 This content is encrypted and cannot be read without the secret key.<br>
+                        Use the decrypt button below to access the content.
+                    </div>
+                    <div class="decrypted-content" id="decryptedContent"></div>
+                </div>
+
+                <div class="key-input-container" id="keyInputContainer" style="display: none;">
+                    <div class="key-input-section">
+                        <h3>Enter Decryption Key or URL</h3>
+                        <div class="input-group">
+                            <p><input type="text" id="keyInput" placeholder="Enter key or URL (e.g., https://pastebin.marqueewinq.xyz/api/v1/paste/abc123def456#your_secret_key)" class="key-input"></p>
+                            <button class="decrypt-btn" id="decryptWithKeyBtn" onclick="decryptWithKey()">
+                                🔓 Decrypt
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-container">
+                    <button class="decrypt-btn" id="decryptBtn" onclick="decryptContent()">
+                        🔓 Decrypt Content
+                    </button>
+                </div>
+
+                <div class="error-message" id="errorMessage"></div>
+                <div class="success-message" id="successMessage"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><a href="/">← Back to Secure Pastebin</a></p>
+            <p>&copy; 2024 <a href="https://pastebin.marqueewinq.xyz">https://pastebin.marqueewinq.xyz</a></p>
+        </div>
+    </div>
+
+    <script>
+        function decryptContent() {
+            const decryptBtn = document.getElementById('decryptBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            const decryptedContent = document.getElementById('decryptedContent');
+            const encryptedPlaceholder = document.querySelector('.encrypted-placeholder');
+            const keyInputContainer = document.getElementById('keyInputContainer');
+
+            // Clear previous messages
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+
+            // Check if URL has a hash fragment (secret key)
+            const hash = window.location.hash.substring(1);
+            if (!hash) {
+                // Show key input field if no hash found
+                keyInputContainer.style.display = 'block';
+                decryptBtn.style.display = 'none';
+                return;
+            }
+
+            // Hide key input field if hash is present
+            keyInputContainer.style.display = 'none';
+            decryptBtn.style.display = 'inline-block';
+
+            // Disable button and show loading state
+            decryptBtn.disabled = true;
+            decryptBtn.textContent = '🔓 Decrypting...';
+
+            // Get the paste ID from the current URL
+            const pathParts = window.location.pathname.split('/');
+            const pasteId = pathParts[pathParts.length - 1];
+
+            // Make request to decrypt the content
+            fetch(`/api/v1/paste/${pasteId}?key=${encodeURIComponent(hash)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        if (response.status === 404) {
+                            throw new Error('Paste not found. It may have expired or been deleted.');
+                        } else if (response.status === 400) {
+                            throw new Error('Invalid secret key. Please check the URL and try again.');
+                        } else if (response.status === 500) {
+                            throw new Error('Decryption failed. The content may be corrupted.');
+                        } else {
+                            throw new Error(`Server error: ${response.status}`);
+                        }
+                    }
+                    return response.text();
+                })
+                .then(content => {
+                    // Hide placeholder and show decrypted content
+                    encryptedPlaceholder.style.display = 'none';
+                    decryptedContent.textContent = content;
+                    decryptedContent.style.display = 'block';
+
+                    // Show success message
+                    successMessage.textContent = '✅ Content decrypted successfully!';
+                    successMessage.style.display = 'block';
+
+                    // Update button
+                    decryptBtn.textContent = '🔓 Content Decrypted';
+                    decryptBtn.style.background = '#28a745';
+                })
+                .catch(error => {
+                    showError(error.message);
+                    // Reset button
+                    decryptBtn.disabled = false;
+                    decryptBtn.textContent = '🔓 Decrypt Content';
+                });
+        }
+
+        function decryptWithKey() {
+            const keyInput = document.getElementById('keyInput');
+            const decryptWithKeyBtn = document.getElementById('decryptWithKeyBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            const decryptedContent = document.getElementById('decryptedContent');
+            const encryptedPlaceholder = document.querySelector('.encrypted-placeholder');
+
+            // Clear previous messages
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+
+            const input = keyInput.value.trim();
+            if (!input) {
+                showError('Please enter a key or URL.');
+                return;
+            }
+
+            // Parse the input to extract the key
+            let key = input;
+
+            // Check if input is a URL with hash
+            if (input.includes('#')) {
+                const urlParts = input.split('#');
+                if (urlParts.length === 2) {
+                    key = urlParts[1];
+                } else {
+                    showError('Invalid URL format. Expected format: URL#key');
+                    return;
+                }
+            }
+
+            if (!key) {
+                showError('No key found. Please provide a valid key or URL with key.');
+                return;
+            }
+
+            // Disable button and show loading state
+            decryptWithKeyBtn.disabled = true;
+            decryptWithKeyBtn.textContent = '🔓 Decrypting...';
+
+            // Get the paste ID from the current URL
+            const pathParts = window.location.pathname.split('/');
+            const pasteId = pathParts[pathParts.length - 1];
+
+            // Make request to decrypt the content
+            fetch(`/api/v1/paste/${pasteId}?key=${encodeURIComponent(key)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        if (response.status === 404) {
+                            throw new Error('Paste not found. It may have expired or been deleted.');
+                        } else if (response.status === 400) {
+                            throw new Error('Invalid secret key. Please check the key and try again.');
+                        } else if (response.status === 500) {
+                            throw new Error('Decryption failed. The content may be corrupted.');
+                        } else {
+                            throw new Error(`Server error: ${response.status}`);
+                        }
+                    }
+                    return response.text();
+                })
+                .then(content => {
+                    // Hide placeholder and show decrypted content
+                    encryptedPlaceholder.style.display = 'none';
+                    decryptedContent.textContent = content;
+                    decryptedContent.style.display = 'block';
+
+                    // Show success message
+                    successMessage.textContent = '✅ Content decrypted successfully!';
+                    successMessage.style.display = 'block';
+
+                    // Update button
+                    decryptWithKeyBtn.textContent = '🔓 Content Decrypted';
+                    decryptWithKeyBtn.style.background = '#28a745';
+
+                    // Hide the key input container
+                    document.getElementById('keyInputContainer').style.display = 'none';
+                })
+                .catch(error => {
+                    showError(error.message);
+                    // Reset button
+                    decryptWithKeyBtn.disabled = false;
+                    decryptWithKeyBtn.textContent = '🔓 Decrypt';
+                });
+        }
+
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = `❌ ${message}`;
+            errorMessage.style.display = 'block';
+        }
+
+        // Auto-decrypt if URL contains hash on page load
+        window.addEventListener('load', function() {
+            if (window.location.hash) {
+                // Small delay to ensure page is fully loaded
+                setTimeout(decryptContent, 500);
+            } else {
+                // Show key input field if no hash
+                document.getElementById('keyInputContainer').style.display = 'block';
+                document.getElementById('decryptBtn').style.display = 'none';
+            }
+        });
+
+        // Allow Enter key to trigger decryption
+        document.addEventListener('DOMContentLoaded', function() {
+            const keyInput = document.getElementById('keyInput');
+            if (keyInput) {
+                keyInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        decryptWithKey();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
