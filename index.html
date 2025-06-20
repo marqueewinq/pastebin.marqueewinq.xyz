@@ -15,7 +15,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
-            background: linear-gradient(135deg, #66ea7e 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #66da7e 0%, #764ba2 100%);
             min-height: 100vh;
         }
 
@@ -29,6 +29,7 @@
             text-align: center;
             padding: 60px 0;
             color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .header h1 {
@@ -209,12 +210,12 @@
         <div class="main-content">
             <div class="section">
                 <h2>What is Secure Pastebin?</h2>
-                <p>Secure Pastebin is a privacy-focused text sharing service that uses <span class="highlight">client-side encryption</span> to ensure your data remains confidential. Unlike traditional pastebin services, your content is encrypted on your device before being uploaded, and the encryption key is never stored on our servers. The encrypted data is deleted after 24 hours.</p>
+                <p>Secure Pastebin is a privacy-focused CLI-first text sharing service that uses <span class="highlight">client-side encryption</span> to ensure your data remains confidential. Unlike traditional pastebin services, your content is encrypted on your device before being uploaded, and the encryption key is never stored on our servers. The encrypted data is deleted after 24 hours.</p>
 
                 <div class="features-grid">
                     <div class="feature-card">
                         <h3>🔒 Client-Side Encryption</h3>
-                        <p>Your data is encrypted using Fernet encryption before it leaves your device. The encryption key is auto-generated locally and is not stored on our servers.</p>
+                        <p>Your data is encrypted before it leaves your device. The encryption key is auto-generated locally and is not stored on our servers.</p>
                     </div>
                     <div class="feature-card">
                         <h3>🚀 Simple CLI Tools</h3>
