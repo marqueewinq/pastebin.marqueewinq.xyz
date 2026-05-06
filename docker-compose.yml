@@ -4,6 +4,7 @@ services:
   pastebin:
     build: .
     container_name: pastebin-app
+    restart: unless-stopped
     ports:
       - "8050:8050"
     volumes:
